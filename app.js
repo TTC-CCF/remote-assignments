@@ -16,11 +16,12 @@ const connection = mysql.createConnection({
   password: process.env.MYSQL_PASSWORD
 });
 
-
+// healthcheck
 app.get('/healthcheck', (req, res) => {
   res.send('OK');
 });
 
+// post users
 app.post('/users', async (req, res) => {
   // only accept json request
   if (req.headers['content-type'] !== 'application/json') {
@@ -104,12 +105,13 @@ app.post('/users', async (req, res) => {
   
 });
 
+// get users
 app.get('/users', (req, res) => { 
   var id = req.query.id;
   if (!id) {
     res.status(400).send({
       "data": {
-        "error": "Request body incomplete"
+        "error": "URL parameter incomplete"
       }
     });
     return;
