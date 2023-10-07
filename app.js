@@ -67,13 +67,24 @@ app.post('/users', async (req, res) => {
     });
     return;
   }
+  // validate request date
+
+  if (req.body.request_date && Date.parse(req.body.request_date) === NaN) {
+    res.status(400).send({
+      "data": {
+        "error": "Invalid request_date"
+      }
+    });
+    return;
+  }
+
   // hashing password
   var salt_rounds = parseInt(process.env.SALT_ROUNDS);
   var password = await bcryptjs.hash(req.body.password, salt_rounds);
   // inserting data
   var id = null;
-  sql_string = `INSERT INTO user (name, email, password) VALUES ('${req.body.name}', '${req.body.email}', '${password}');`;
-  connection.query(sql_string, function (err, result) {
+  sql_string = 'INSERT INTO user (name, email, password) VALUES (?, ?, ?);';
+  connection.query(sql_string, [req.body.name, req.body.email, req.body.password], function (err, result) {
     if (err) {
       if (err.code === 'ER_DUP_ENTRY') 
         res.status(409).send({
@@ -82,7 +93,7 @@ app.post('/users', async (req, res) => {
           }
         });
       else
-        res.status(400).send({
+        res.status(500).send({
           "data": {
             "error": "Failed to insert data"
           }
@@ -97,7 +108,7 @@ app.post('/users', async (req, res) => {
           "name": req.body.name,
           "email": req.body.email,
         },
-        "request-date": new Date().toUTCString()
+        "request-date": req.headers['request-date']
       }
     });
 
@@ -116,8 +127,8 @@ app.get('/users', (req, res) => {
     });
     return;
   }
-  sql_string = `SELECT * FROM user where id=${id};`;
-  connection.query(sql_string, function (err, result) {
+  sql_string = 'SELECT * FROM user where id=?;';
+  connection.query(sql_string, [id], function (err, result) {
     if (result && result.length === 0) {
       res.status(400).send({
         "data": {
@@ -127,7 +138,7 @@ app.get('/users', (req, res) => {
     }
     else if (err){
       console.log(err);
-      res.status(400).send({
+      res.status(500).send({
         "data": {
           "error": "Failed to get data"
         }
@@ -141,7 +152,7 @@ app.get('/users', (req, res) => {
             "name": result[0].name,
             "email": result[0].email,
           },
-          "request-date": new Date().toUTCString()
+          "request-date": req.headers['request-date']
         }
       });
     }
