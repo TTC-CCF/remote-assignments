@@ -7,7 +7,7 @@ function test_post() {
             },
             body: JSON.stringify({
                 name: 'yoyoy',
-                email: 'fdfdfd.cs10@nycu.edu.tw',
+                email: 'dhdh.cs10@nycu.edu.tw',
                 password: '^**paul3'
             })
         })

@@ -23,7 +23,7 @@ app.get('/healthcheck', (req, res) => {
 
 // post users
 app.post('/users', async (req, res) => {
-  // only accept json request
+  // validate headers
   if (req.headers['content-type'] !== 'application/json') {
     res.status(400).send({
       "data": {
@@ -32,7 +32,16 @@ app.post('/users', async (req, res) => {
     });
     return;
   }
+  if (req.headers['request-date'] && Date.parse(req.headers['request-date']) === NaN) {
+    res.status(400).send({
+      "data": {
+        "error": "Invalid request_date"
+      }
+    });
+    return;
+  }
   
+  // validate body
   if (!req.body.name || !req.body.email || !req.body.password) {
     res.status(400).send({
       "data": {
@@ -67,16 +76,7 @@ app.post('/users', async (req, res) => {
     });
     return;
   }
-  // validate request date
-
-  if (req.body.request_date && Date.parse(req.body.request_date) === NaN) {
-    res.status(400).send({
-      "data": {
-        "error": "Invalid request_date"
-      }
-    });
-    return;
-  }
+  
 
   // hashing password
   var salt_rounds = parseInt(process.env.SALT_ROUNDS);
@@ -84,7 +84,7 @@ app.post('/users', async (req, res) => {
   // inserting data
   var id = null;
   sql_string = 'INSERT INTO user (name, email, password) VALUES (?, ?, ?);';
-  connection.query(sql_string, [req.body.name, req.body.email, req.body.password], function (err, result) {
+  connection.query(sql_string, [req.body.name, req.body.email, password], function (err, result) {
     if (err) {
       if (err.code === 'ER_DUP_ENTRY') 
         res.status(409).send({
@@ -108,7 +108,7 @@ app.post('/users', async (req, res) => {
           "name": req.body.name,
           "email": req.body.email,
         },
-        "request-date": req.headers['request-date']
+        "request-date": req.headers['request-date'],
       }
     });
 
@@ -152,7 +152,7 @@ app.get('/users', (req, res) => {
             "name": result[0].name,
             "email": result[0].email,
           },
-          "request-date": req.headers['request-date']
+          "request-date": req.headers['request-date'],
         }
       });
     }
