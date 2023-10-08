@@ -1,5 +1,5 @@
 function test_post() {
-        return fetch('http://localhost:3000/users', {
+        return fetch('http://3.104.242.69:3000/users', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -7,7 +7,7 @@ function test_post() {
             },
             body: JSON.stringify({
                 name: 'yoyoy',
-                email: 'dhdh.cs10@nycu.edu.tw',
+                email: 'iii.cs10@nycu.edu.tw',
                 password: '^**paul3'
             })
         })
@@ -26,7 +26,7 @@ function test_post() {
 }
 
 function test_get(id) {
-    return fetch(`http://localhost:3000/users?id=${id}`, {
+    return fetch(`http://3.104.242.69:3000/users?id=${id}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
