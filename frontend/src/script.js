@@ -1,20 +1,20 @@
 function validateData() {
-    var name = document.getElementById("name");
-    var email = document.getElementById("email");
-    var password = document.getElementById("password");
+    let name = document.getElementById("name");
+    let email = document.getElementById("email");
+    let password = document.getElementById("password");
 
     return (name.validity.valid && email.validity.valid && password.validity.valid)
 }
 
 function UserSignIn(){
-    var name = document.getElementById("name").value;
-    var email = document.getElementById("email").value;
-    var password = document.getElementById("password").value;
+    let name = document.getElementById("name").value;
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
 
     if (!validateData()) {
         return;
     }
-    fetch('/api/users', {
+    fetch('/users', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -35,3 +35,5 @@ function UserSignIn(){
         }
     });
 }
+
+export { UserSignIn, validateData }
