@@ -130,7 +130,7 @@ app.get('/users', (req, res) => {
   sql_string = 'SELECT * FROM user where id=?;';
   connection.query(sql_string, [id], function (err, result) {
     if (result && result.length === 0) {
-      res.status(400).send({
+      res.status(403).send({
         "data": {
           "error": "User not exist"
         }
